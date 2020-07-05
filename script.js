@@ -2,6 +2,12 @@
 let chess=Array(8).fill(Array(8).fill(0));
 
 const length = chess.length;
+
+/** Координаты возможных ходов для коня, от изначальной позиции*/
+const horseSteps = [
+    {x: 1, y:2}, {x: 1, y:-2}, {x: -1, y:2}, {x: -1, y:-2},
+    {x: 2, y:1}, {x: 2, y:-1}, {x: -2, y:1}, {x: -2, y:-1}
+]
 function draw() {
     let out = '';
     let m = 0;
@@ -31,6 +37,7 @@ function removeHorse() {
     })
 }
 
+/** Функция показывает возможное положение для хода коня, или же если уже показаны то скрывает*/
 function horse() {
     // Если предыдущий раз уже нажимали по этому полю то очистить
     if (this.classList.contains('green')) {
@@ -39,36 +46,41 @@ function horse() {
     }
 
     removeHorse();
-    let x = this.dataset.x;
-    let y = this.dataset.y;
     this.classList.add('green');
-    if (+x+2 < length && +y+1 < length) {
-        document.querySelector(`.chess-block[data-x="${+x+2}"][data-y="${+y+1}"]`).classList.add('active');
-    }
-    if (+x+2 < length && +y-1 >= 0) {
-        document.querySelector(`.chess-block[data-x="${+x+2}"][data-y="${+y-1}"]`).classList.add('active');
-    }
-    if (+x-2 >= 0 && +y+1 < length) {
-        document.querySelector(`.chess-block[data-x="${+x-2}"][data-y="${+y+1}"]`).classList.add('active');
-    }
-    if (+x-2 >= 0 && +y-1 >= 0) {
-        document.querySelector(`.chess-block[data-x="${+x-2}"][data-y="${+y-1}"]`).classList.add('active');
-    }
+    horseSteps.reduce((acc, {x,y}) => {
+        const xPoint = x + +this.dataset.x;
+        const yPoint = y + +this.dataset.y;
+        if (xPoint >=0 && xPoint < length && yPoint >=0 && yPoint < length ) {
+            acc.push(document.querySelector(`.chess-block[data-x="${xPoint}"][data-y="${yPoint}"]`).classList.add('active'));
+        }
+        return acc
+    }, [])
 
-
-
-    if (+x-1 >= 0 && +y+2 < length) {
-        document.querySelector(`.chess-block[data-x="${+x-1}"][data-y="${+y+2}"]`).classList.add('active');
-    }
-    if (+x-1 >= 0 && +y-2 >= 0) {
-        document.querySelector(`.chess-block[data-x="${+x-1}"][data-y="${+y-2}"]`).classList.add('active');
-    }
-    if (+x+1 < length && +y+2 < length) {
-        document.querySelector(`.chess-block[data-x="${+x+1}"][data-y="${+y+2}"]`).classList.add('active');
-    }
-    if (+x+1 < length && +y-2 >= 0) {
-        document.querySelector(`.chess-block[data-x="${+x+1}"][data-y="${+y-2}"]`).classList.add('active');
-    }
+    // if (+x+2 < length && +y+1 < length) {
+    //     document.querySelector(`.chess-block[data-x="${+x+2}"][data-y="${+y+1}"]`).classList.add('active');
+    // }
+    // if (+x+2 < length && +y-1 >= 0) {
+    //     document.querySelector(`.chess-block[data-x="${+x+2}"][data-y="${+y-1}"]`).classList.add('active');
+    // }
+    // if (+x-2 >= 0 && +y+1 < length) {
+    //     document.querySelector(`.chess-block[data-x="${+x-2}"][data-y="${+y+1}"]`).classList.add('active');
+    // }
+    // if (+x-2 >= 0 && +y-1 >= 0) {
+    //     document.querySelector(`.chess-block[data-x="${+x-2}"][data-y="${+y-1}"]`).classList.add('active');
+    // }
+    //
+    // if (+x-1 >= 0 && +y+2 < length) {
+    //     document.querySelector(`.chess-block[data-x="${+x-1}"][data-y="${+y+2}"]`).classList.add('active');
+    // }
+    // if (+x-1 >= 0 && +y-2 >= 0) {
+    //     document.querySelector(`.chess-block[data-x="${+x-1}"][data-y="${+y-2}"]`).classList.add('active');
+    // }
+    // if (+x+1 < length && +y+2 < length) {
+    //     document.querySelector(`.chess-block[data-x="${+x+1}"][data-y="${+y+2}"]`).classList.add('active');
+    // }
+    // if (+x+1 < length && +y-2 >= 0) {
+    //     document.querySelector(`.chess-block[data-x="${+x+1}"][data-y="${+y-2}"]`).classList.add('active');
+    // }
 }
 
 // ===== Маршрут Яниша ====
@@ -122,7 +134,7 @@ function drawWay(element, arr) {
     removeWay();
     // На время работы отрисовки маршрута заблокировать кнопку
     element.target.disabled = true;
-    // Скорость отрисовки
+    // Скорость отрисовки хода 
     const interval = 300;
     const masLength = arr.length;
     let timer;
@@ -163,3 +175,4 @@ function removeWay() {
         element.textContent = '';
     })
 }
+
